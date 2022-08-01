@@ -3,11 +3,13 @@ package servicos;
 import entidades.Filme;
 import entidades.Locacao;
 import entidades.Usuario;
-import org.junit.Assert;
 import org.junit.Test;
 import utils.DateUtils;
 
 import java.util.Date;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 public class LocacaoServiceTest {
 
@@ -22,13 +24,13 @@ public class LocacaoServiceTest {
 		Locacao locacao = locacaoService.alugarFilme(usuario, filme);
 
 		//verificacao
-		Assert.assertEquals(5.0 , locacao.getValor(), 0.01);
-		Assert.assertTrue(DateUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
-		Assert.assertTrue(DateUtils.isMesmaData(locacao.getDataRetorno(), DateUtils.obterDataComDiferencaDias(1)));
+		assertEquals(5.0, locacao.getValor(), 0.01);
+		assertTrue(DateUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
+		assertTrue(DateUtils.isMesmaData(locacao.getDataRetorno(), DateUtils.obterDataComDiferencaDias(1)));
 	}
 
 	@Test
-	public void teste2() {
+	public void teste2UsandoFluentInterface() {
 		// cenario
 		LocacaoService locacaoService = new LocacaoService();
 		Usuario usuario = new Usuario("William");
@@ -38,8 +40,9 @@ public class LocacaoServiceTest {
 		Locacao locacao = locacaoService.alugarFilme(usuario, filme);
 
 		//verificacao
-		Assert.assertEquals(5.0 , locacao.getValor(), 0.01);
-		Assert.assertTrue(DateUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
-		Assert.assertTrue(DateUtils.isMesmaData(locacao.getDataRetorno(), DateUtils.obterDataComDiferencaDias(1)));
+		assertThat(locacao.getValor(), is(equalTo(5.0)));
+		assertThat(locacao.getValor(), is(not(5.0)));
+		assertThat(DateUtils.isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
+		assertThat(DateUtils.isMesmaData(locacao.getDataRetorno(), DateUtils.obterDataComDiferencaDias(1)), is(true));
 	}
 }
