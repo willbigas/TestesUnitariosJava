@@ -27,23 +27,7 @@ public class LocacaoServiceTest {
 
 	@Before
 	public void before() {
-		System.out.println("Before");
 		service = new LocacaoService();
-	}
-
-	@After
-	public void after() {
-		System.out.println("After");
-	}
-
-	@BeforeClass
-	public static void beforeClass() {
-		System.out.println("Before class");
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		System.out.println("After class");
 	}
 
 	@Test
@@ -51,8 +35,6 @@ public class LocacaoServiceTest {
 		// cenario
 		Usuario usuario = new Usuario("William");
 		Filme filme = new Filme("Filme 1", 2, 5.0);
-
-		System.out.println("Teste");
 
 		//acao
 		Locacao locacao = service.alugarFilme(usuario, filme);
@@ -63,7 +45,7 @@ public class LocacaoServiceTest {
 	}
 
 	@Test(expected = FilmeSemEstoqueException.class)
-	public void deveLancarExceptionCasoFilmeNaoTenhaEstoque_Elegante() throws Exception {
+	public void deveLancarExcepqtionCasoFilmeNaoTenhaEstoque_Elegante() throws Exception {
 		// cenario
 		Usuario usuario = new Usuario("William");
 		Filme filme = new Filme("Filme 1", 0, 5.0);
