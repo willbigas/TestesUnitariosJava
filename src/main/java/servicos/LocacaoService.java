@@ -3,16 +3,26 @@ package servicos;
 import entidades.Filme;
 import entidades.Locacao;
 import entidades.Usuario;
+import exceptions.FilmeSemEstoqueException;
+import exceptions.LocadoraException;
 import utils.DateUtils;
 
 import java.util.Date;
 
 public class LocacaoService {
 
-	public Locacao alugarFilme(Usuario usuario, Filme filme) throws Exception {
+	public Locacao alugarFilme(Usuario usuario, Filme filme) throws LocadoraException, FilmeSemEstoqueException {
 
-		if (filme.getEstoque() == 0 ) {
-			throw new Exception("Filme sem estoque");
+		if (usuario == null) {
+			throw new LocadoraException("Usuário vazio");
+		}
+
+		if (filme == null) {
+			throw new LocadoraException("Filme vazio");
+		}
+
+		if (filme.getEstoque() == 0) {
+			throw new FilmeSemEstoqueException("Filme sem estoque");
 		}
 
 		Locacao locacao = new Locacao();
