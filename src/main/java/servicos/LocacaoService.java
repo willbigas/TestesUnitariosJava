@@ -11,18 +11,22 @@ import java.util.Date;
 
 public class LocacaoService {
 
+	public static final String MENSAGEM_USUARIO_VAZIO = "Usuário vazio";
+	public static final String MENSAGEM_FILME_VAZIO = "Filme vazio";
+	public static final String MENSAGEM_FILME_SEM_ESTOQUE = "Filme sem estoque";
+
 	public Locacao alugarFilme(Usuario usuario, Filme filme) throws LocadoraException, FilmeSemEstoqueException {
 
 		if (usuario == null) {
-			throw new LocadoraException("Usuário vazio");
+			throw new LocadoraException(MENSAGEM_USUARIO_VAZIO);
 		}
 
 		if (filme == null) {
-			throw new LocadoraException("Filme vazio");
+			throw new LocadoraException(MENSAGEM_FILME_VAZIO);
 		}
 
 		if (filme.getEstoque() == 0) {
-			throw new FilmeSemEstoqueException("Filme sem estoque");
+			throw new FilmeSemEstoqueException(MENSAGEM_FILME_SEM_ESTOQUE);
 		}
 
 		Locacao locacao = new Locacao();

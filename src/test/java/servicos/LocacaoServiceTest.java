@@ -5,8 +5,7 @@ import entidades.Locacao;
 import entidades.Usuario;
 import exceptions.FilmeSemEstoqueException;
 import exceptions.LocadoraException;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
 import utils.DateUtils;
@@ -18,21 +17,45 @@ import static org.junit.Assert.*;
 
 public class LocacaoServiceTest {
 
+	private LocacaoService service;
+
 	@Rule
 	public ErrorCollector error = new ErrorCollector();
 
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 
+	@Before
+	public void before() {
+		System.out.println("Before");
+		service = new LocacaoService();
+	}
+
+	@After
+	public void after() {
+		System.out.println("After");
+	}
+
+	@BeforeClass
+	public static void beforeClass() {
+		System.out.println("Before class");
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		System.out.println("After class");
+	}
+
 	@Test
 	public void testeLocacao() throws Exception {
 		// cenario
-		LocacaoService locacaoService = new LocacaoService();
 		Usuario usuario = new Usuario("William");
 		Filme filme = new Filme("Filme 1", 2, 5.0);
 
+		System.out.println("Teste");
+
 		//acao
-		Locacao locacao = locacaoService.alugarFilme(usuario, filme);
+		Locacao locacao = service.alugarFilme(usuario, filme);
 		//verificacao
 		assertEquals(5.0, locacao.getValor(), 0.01);
 		assertTrue(DateUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
@@ -42,24 +65,22 @@ public class LocacaoServiceTest {
 	@Test(expected = FilmeSemEstoqueException.class)
 	public void deveLancarExceptionCasoFilmeNaoTenhaEstoque_Elegante() throws Exception {
 		// cenario
-		LocacaoService locacaoService = new LocacaoService();
 		Usuario usuario = new Usuario("William");
 		Filme filme = new Filme("Filme 1", 0, 5.0);
 
 		//acao
-		locacaoService.alugarFilme(usuario, filme);
+		service.alugarFilme(usuario, filme);
 	}
 
 	@Test
 	public void deveLancarExceptionCasoFilmeNaoTenhaEstoque_Robusta() {
 		// cenario
-		LocacaoService locacaoService = new LocacaoService();
 		Usuario usuario = new Usuario("William");
 		Filme filme = new Filme("Filme 1", 0, 5.0);
 
 		//acao
 		try {
-			locacaoService.alugarFilme(usuario, filme);
+			service.alugarFilme(usuario, filme);
 			fail("Deveria ter lançado uma excessão");
 		} catch (Exception e) {
 			//Verificacao
@@ -70,7 +91,6 @@ public class LocacaoServiceTest {
 	@Test
 	public void deveLancarExceptionCasoFilmeNaoTenhaEstoque_FormaNova() throws Exception {
 		// cenario
-		LocacaoService locacaoService = new LocacaoService();
 		Usuario usuario = new Usuario("William");
 		Filme filme = new Filme("Filme 1", 0, 5.0);
 
@@ -78,21 +98,20 @@ public class LocacaoServiceTest {
 		exception.expectMessage("Filme sem estoque");
 
 		//acao
-		locacaoService.alugarFilme(usuario, filme);
+		service.alugarFilme(usuario, filme);
 
 	}
 
 	@Test
 	public void teste2UsandoFluentInterface() {
 		// cenario
-		LocacaoService locacaoService = new LocacaoService();
 		Usuario usuario = new Usuario("William");
 		Filme filme = new Filme("Filme 1", 2, 5.0);
 
 		//acao
 		Locacao locacao = null;
 		try {
-			locacao = locacaoService.alugarFilme(usuario, filme);
+			locacao = service.alugarFilme(usuario, filme);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -106,14 +125,13 @@ public class LocacaoServiceTest {
 	@Test
 	public void testeLocacaoUsandoErrorCollector() {
 		// cenario
-		LocacaoService locacaoService = new LocacaoService();
 		Usuario usuario = new Usuario("William");
 		Filme filme = new Filme("Filme 1", 2, 5.0);
 
 		//acao
 		Locacao locacao = null;
 		try {
-			locacao = locacaoService.alugarFilme(usuario, filme);
+			locacao = service.alugarFilme(usuario, filme);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -127,12 +145,11 @@ public class LocacaoServiceTest {
 	@Test
 	public void deveLancarLocadoraExceptionSeUsuarioEstiverVazio() throws FilmeSemEstoqueException {
 		//cenario
-		LocacaoService locacaoService = new LocacaoService();
 		Filme filme = new Filme("Filme 1", 2, 5.0);
 
 		//acao
 		try {
-			Locacao locacao = locacaoService.alugarFilme(null, filme);
+			Locacao locacao = service.alugarFilme(null, filme);
 			fail();
 		} catch (LocadoraException e) {
 			assertThat(e.getMessage() , is("Usuário vazio"));
@@ -143,13 +160,12 @@ public class LocacaoServiceTest {
 	@Test
 	public void naoDeveLancarLocadoraExceptionSeUsuarioNaoEstiverVazio() throws FilmeSemEstoqueException {
 		//cenario
-		LocacaoService locacaoService = new LocacaoService();
 		Usuario usuario = new Usuario("William");
 		Filme filme = new Filme("Filme 1", 2, 5.0);
 
 		//acao
 		try {
-			Locacao locacao = locacaoService.alugarFilme(usuario, filme);
+			Locacao locacao = service.alugarFilme(usuario, filme);
 		} catch (LocadoraException e) {
 			fail(e.getMessage());
 		}
@@ -159,12 +175,11 @@ public class LocacaoServiceTest {
 	@Test
 	public void deveLancarLocadoraExceptionSeFilmeEstiverVazio() throws FilmeSemEstoqueException {
 		//cenario
-		LocacaoService locacaoService = new LocacaoService();
 		Usuario usuario = new Usuario("William");
 
 		//acao
 		try {
-			Locacao locacao = locacaoService.alugarFilme(usuario, null);
+			Locacao locacao = service.alugarFilme(usuario, null);
 			fail();
 		} catch (LocadoraException e) {
 			assertThat(e.getMessage() , is("Filme vazio"));
@@ -173,18 +188,16 @@ public class LocacaoServiceTest {
 	}
 
 	@Test
-	public void naoDeveLancarLocadoraExceptionSeFilmeNaoEstiverVazio() throws FilmeSemEstoqueException {
+	public void deveLancarLocadoraExceptionSeFilmeEstiverVazio_FormaRobusta() throws FilmeSemEstoqueException, LocadoraException {
 		//cenario
-		LocacaoService locacaoService = new LocacaoService();
 		Usuario usuario = new Usuario("William");
-		Filme filme = new Filme("Filme 1", 2, 5.0);
+
+		exception.expect(LocadoraException.class);
+		exception.expectMessage("Filme vazio");
 
 		//acao
-		try {
-			Locacao locacao = locacaoService.alugarFilme(usuario, filme);
-		} catch (LocadoraException e) {
-			fail(e.getMessage());
-		}
+		service.alugarFilme(usuario, null);
 
 	}
+
 }
