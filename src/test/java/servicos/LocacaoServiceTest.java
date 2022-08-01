@@ -22,7 +22,23 @@ public class LocacaoServiceTest {
 		Locacao locacao = locacaoService.alugarFilme(usuario, filme);
 
 		//verificacao
-		Assert.assertTrue(locacao.getValor() == 5.0);
+		Assert.assertEquals(5.0 , locacao.getValor(), 0.01);
+		Assert.assertTrue(DateUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
+		Assert.assertTrue(DateUtils.isMesmaData(locacao.getDataRetorno(), DateUtils.obterDataComDiferencaDias(1)));
+	}
+
+	@Test
+	public void teste2() {
+		// cenario
+		LocacaoService locacaoService = new LocacaoService();
+		Usuario usuario = new Usuario("William");
+		Filme filme = new Filme("Filme 1", 2, 5.0);
+
+		//acao
+		Locacao locacao = locacaoService.alugarFilme(usuario, filme);
+
+		//verificacao
+		Assert.assertEquals(5.0 , locacao.getValor(), 0.01);
 		Assert.assertTrue(DateUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
 		Assert.assertTrue(DateUtils.isMesmaData(locacao.getDataRetorno(), DateUtils.obterDataComDiferencaDias(1)));
 	}
