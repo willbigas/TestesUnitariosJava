@@ -1,22 +1,22 @@
 package entidades;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Locacao {
 
 	private Usuario usuario;
 	private List<Filme> filmes;
-	private Date dataLocacao;
-	private Date dataRetorno;
+	private LocalDate dataLocacao;
+	private LocalDate dataRetorno;
 	private Double valor;
 
 	public Locacao() {
 		filmes = new ArrayList<>();
 	}
 
-	public Locacao(Usuario usuario, List<Filme> filmes, Date dataLocacao, Date dataRetorno, Double valor) {
+	public Locacao(Usuario usuario, List<Filme> filmes, LocalDate dataLocacao, LocalDate dataRetorno, Double valor) {
 		this.usuario = usuario;
 		this.filmes = filmes;
 		this.dataLocacao = dataLocacao;
@@ -40,19 +40,19 @@ public class Locacao {
 		this.filmes = filmes;
 	}
 
-	public Date getDataLocacao() {
+	public LocalDate getDataLocacao() {
 		return dataLocacao;
 	}
 
-	public void setDataLocacao(Date dataLocacao) {
+	public void setDataLocacao(LocalDate dataLocacao) {
 		this.dataLocacao = dataLocacao;
 	}
 
-	public Date getDataRetorno() {
+	public LocalDate getDataRetorno() {
 		return dataRetorno;
 	}
 
-	public void setDataRetorno(Date dataRetorno) {
+	public void setDataRetorno(LocalDate dataRetorno) {
 		this.dataRetorno = dataRetorno;
 	}
 

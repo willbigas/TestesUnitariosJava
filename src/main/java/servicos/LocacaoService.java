@@ -7,6 +7,9 @@ import exceptions.FilmeSemEstoqueException;
 import exceptions.LocadoraException;
 import utils.DateUtils;
 
+import java.time.Clock;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.*;
 
 public class LocacaoService {
@@ -23,6 +26,12 @@ public class LocacaoService {
 	public static final double VINTE_CINCO_POR_CENTO = 25.0 / 100.0;
 	public static final double CINQUENTA_POR_CENTO = 50.0 / 100.0;
 	public static final double SETENTA_E_CINCO_POR_CENTO = 75.0 / 100.0;
+
+	private Clock clock;
+
+	public LocacaoService(Clock clock) {
+		this.clock = clock;
+	}
 
 	public Locacao alugarFilme(Usuario usuario, Filme filme) throws LocadoraException, FilmeSemEstoqueException {
 
@@ -56,11 +65,19 @@ public class LocacaoService {
 		Locacao locacao = new Locacao();
 		locacao.getFilmes().addAll(filmes);
 		locacao.setUsuario(usuario);
-		locacao.setDataLocacao(new Date());
+		locacao.setDataLocacao(LocalDate.now(clock));
 		locacao.setValor(precoLocacaoTotal);
 
-		Date dataEntrega = new Date();
-		dataEntrega = DateUtils.adicionarDias(dataEntrega, 1);
+		LocalDate dataEntrega = LocalDate.now(clock);
+		dataEntrega = dataEntrega.plusDays(1);
+
+		if (DateUtils.isSabado(dataEntrega)) {
+			dataEntrega = dataEntrega.plusDays(2);
+		}
+
+		if (DateUtils.isDomingo(dataEntrega)) {
+			dataEntrega = dataEntrega.plusDays(1);
+		}
 		locacao.setDataRetorno(dataEntrega);
 
 		// SALVANDO LOCACAO

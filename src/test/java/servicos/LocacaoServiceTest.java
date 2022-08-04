@@ -10,10 +10,8 @@ import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
 import utils.DateUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.time.*;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -30,7 +28,7 @@ public class LocacaoServiceTest {
 
 	@Before
 	public void before() {
-		service = new LocacaoService();
+		service = new LocacaoService(Clock.systemDefaultZone());
 	}
 
 	@Test
@@ -43,8 +41,8 @@ public class LocacaoServiceTest {
 		Locacao locacao = service.alugarFilme(usuario, filme);
 		//verificacao
 		assertEquals(5.0, locacao.getValor(), 0.01);
-		assertTrue(DateUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
-		assertTrue(DateUtils.isMesmaData(locacao.getDataRetorno(), DateUtils.obterDataComDiferencaDias(1)));
+		assertEquals(locacao.getDataLocacao(), LocalDate.now());
+		assertEquals(locacao.getDataRetorno(), LocalDate.now().plusDays(1));
 	}
 
 	@Test
@@ -60,8 +58,8 @@ public class LocacaoServiceTest {
 		Locacao locacao = service.alugarFilmes(usuario, filmes);
 		//verificacao
 		assertEquals(10, locacao.getValor(), 0.01);
-		assertTrue(DateUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
-		assertTrue(DateUtils.isMesmaData(locacao.getDataRetorno(), DateUtils.obterDataComDiferencaDias(1)));
+		assertEquals(locacao.getDataLocacao(), LocalDate.now());
+		assertEquals(locacao.getDataRetorno(), LocalDate.now().plusDays(1));
 	}
 
 	@Test
@@ -149,6 +147,39 @@ public class LocacaoServiceTest {
 		Locacao locacao = service.alugarFilmes(usuario, filmes);
 		//verificacao
 		assertEquals(valorTotalMenosDesconto, locacao.getValor(), 0.01);
+	}
+
+	@Test
+	public void deveDevolverNaSegundaAoAlugarNoSabado() throws FilmeSemEstoqueException, LocadoraException {
+		Clock relogioDeSabado = DateUtils.fixarData(LocalDate.of(2022, Month.AUGUST, 5));
+
+		//cenario
+		Usuario usuario = new Usuario("Usuário 1");
+		List<Filme> filmes = Collections.singletonList(new Filme("Filme1 ", 1, 5.0));
+
+		//acao
+		service = new LocacaoService(relogioDeSabado);
+		Locacao locacao = service.alugarFilmes(usuario, filmes);
+
+		//verificacao
+		assertEquals(DayOfWeek.MONDAY, locacao.getDataRetorno().getDayOfWeek());
+	}
+
+
+	@Test
+	public void deveDevolverNaSegundaAoAlugarNoDomingo() throws FilmeSemEstoqueException, LocadoraException {
+		Clock relogioDeSabado = DateUtils.fixarData(LocalDate.of(2022, Month.AUGUST, 6));
+
+		//cenario
+		Usuario usuario = new Usuario("Usuário 1");
+		List<Filme> filmes = Collections.singletonList(new Filme("Filme1 ", 1, 5.0));
+
+		//acao
+		service = new LocacaoService(relogioDeSabado);
+		Locacao locacao = service.alugarFilmes(usuario, filmes);
+
+		//verificacao
+		assertEquals(DayOfWeek.MONDAY, locacao.getDataRetorno().getDayOfWeek());
 	}
 
 
@@ -239,8 +270,8 @@ public class LocacaoServiceTest {
 
 		//verificacao
 		assertThat(locacao.getValor(), is(equalTo(5.0)));
-		assertThat(DateUtils.isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
-		assertThat(DateUtils.isMesmaData(locacao.getDataRetorno(), DateUtils.obterDataComDiferencaDias(1)), is(true));
+		assertThat(locacao.getDataLocacao(), equalTo(LocalDate.now()));
+		assertThat(locacao.getDataRetorno(), equalTo(LocalDate.now().plusDays(1)));
 	}
 
 	@Test
@@ -259,8 +290,8 @@ public class LocacaoServiceTest {
 
 		//verificacao
 		error.checkThat(locacao.getValor(), is(equalTo(5.0)));
-		error.checkThat(DateUtils.isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
-		error.checkThat(DateUtils.isMesmaData(locacao.getDataRetorno(), DateUtils.obterDataComDiferencaDias(1)), is(true));
+		error.checkThat(locacao.getDataLocacao(), equalTo(LocalDate.now()));
+		error.checkThat(locacao.getDataRetorno(), equalTo(LocalDate.now().plusDays(1)));
 	}
 
 	@Test
