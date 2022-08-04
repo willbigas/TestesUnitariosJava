@@ -10,7 +10,10 @@ import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
 import utils.DateUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -44,8 +47,56 @@ public class LocacaoServiceTest {
 		assertTrue(DateUtils.isMesmaData(locacao.getDataRetorno(), DateUtils.obterDataComDiferencaDias(1)));
 	}
 
+	@Test
+	public void deveLocarUmaListaDeFilmesCasoTenhaTodosOsParametros() throws Exception {
+		// cenario
+		Usuario usuario = new Usuario("William");
+		Filme filme = new Filme("Filme 1", 2, 5.0);
+		Filme filme2 = new Filme("Filme 2", 4, 5.0);
+
+		List<Filme> filmes = Arrays.asList(filme, filme2);
+
+		//acao
+		Locacao locacao = service.alugarFilmes(usuario, filmes);
+		//verificacao
+		assertEquals(10, locacao.getValor(), 0.01);
+		assertTrue(DateUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
+		assertTrue(DateUtils.isMesmaData(locacao.getDataRetorno(), DateUtils.obterDataComDiferencaDias(1)));
+	}
+
+	@Test
+	public void deveLancarLocadoraExceptionSeListaDeFilmesEstiverNull() throws FilmeSemEstoqueException {
+		//cenario
+		Usuario usuario = new Usuario("William");
+
+		//acao
+		try {
+			Locacao locacao = service.alugarFilme(usuario, null);
+			fail();
+		} catch (LocadoraException e) {
+			assertThat(e.getMessage() , is("Filme vazio"));
+		}
+
+	}
+
+	@Test
+	public void deveLancarLocadoraExceptionSeListaDeFilmesEstiverVazia() throws FilmeSemEstoqueException {
+		//cenario
+		Usuario usuario = new Usuario("William");
+
+		//acao
+		try {
+			Locacao locacao = service.alugarFilmes(usuario, new ArrayList<>());
+			fail();
+		} catch (LocadoraException e) {
+			assertThat(e.getMessage() , is("Filme vazio"));
+		}
+
+	}
+
+
 	@Test(expected = FilmeSemEstoqueException.class)
-	public void deveLancarExcepqtionCasoFilmeNaoTenhaEstoque_Elegante() throws Exception {
+	public void deveLancarExceptionCasoFilmeNaoTenhaEstoque_Elegante() throws Exception {
 		// cenario
 		Usuario usuario = new Usuario("William");
 		Filme filme = new Filme("Filme 1", 0, 5.0);

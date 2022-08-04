@@ -7,7 +7,7 @@ import exceptions.FilmeSemEstoqueException;
 import exceptions.LocadoraException;
 import utils.DateUtils;
 
-import java.util.Date;
+import java.util.*;
 
 public class LocacaoService {
 
@@ -17,23 +17,36 @@ public class LocacaoService {
 
 	public Locacao alugarFilme(Usuario usuario, Filme filme) throws LocadoraException, FilmeSemEstoqueException {
 
-		if (usuario == null) {
-			throw new LocadoraException(MENSAGEM_USUARIO_VAZIO);
-		}
-
 		if (filme == null) {
 			throw new LocadoraException(MENSAGEM_FILME_VAZIO);
 		}
 
-		if (filme.getEstoque() == 0) {
-			throw new FilmeSemEstoqueException(MENSAGEM_FILME_SEM_ESTOQUE);
+		return alugarFilmes(usuario , Collections.singletonList(filme));
+	}
+
+	public Locacao alugarFilmes(Usuario usuario, List<Filme> filmes) throws LocadoraException, FilmeSemEstoqueException {
+
+		if (usuario == null) {
+			throw new LocadoraException(MENSAGEM_USUARIO_VAZIO);
 		}
 
+		if (filmes == null || filmes.isEmpty()) {
+			throw new LocadoraException(MENSAGEM_FILME_VAZIO);
+		}
+
+		for (Filme filme : filmes) {
+			if (filme.getEstoque() == 0) {
+				throw new FilmeSemEstoqueException(MENSAGEM_FILME_SEM_ESTOQUE);
+			}
+		}
+
+		Double precoLocacaoTotal = filmes.stream().mapToDouble(Filme::getPrecoLocacao).sum();
+
 		Locacao locacao = new Locacao();
-		locacao.setFilme(filme);
+		locacao.getFilmes().addAll(filmes);
 		locacao.setUsuario(usuario);
 		locacao.setDataLocacao(new Date());
-		locacao.setValor(filme.getPrecoLocacao());
+		locacao.setValor(precoLocacaoTotal);
 
 		Date dataEntrega = new Date();
 		dataEntrega = DateUtils.adicionarDias(dataEntrega, 1);
